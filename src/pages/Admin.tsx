@@ -678,7 +678,7 @@ const Admin = () => {
         </div>
       </div>
 
-      <style jsx>{`
+      <style>{`
         .sidebar-collapsed .nav-link span {
           display: none;
         }
