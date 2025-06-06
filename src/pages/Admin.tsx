@@ -1,10 +1,10 @@
-
 import React, { useState } from 'react';
-import { Users, Settings, DollarSign, FileText, Menu, X, TrendingUp, UserCheck, CreditCard, Eye } from 'lucide-react';
+import { Users, Settings, DollarSign, FileText, Menu, X, TrendingUp, UserCheck, CreditCard, Eye, ChevronLeft } from 'lucide-react';
 
 const Admin = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [editingPricing, setEditingPricing] = useState(false);
   const [pricingData, setPricingData] = useState({
     basic: { price: 9.99, features: ['5 Projects', 'Basic Support', '1GB Storage'] },
@@ -572,77 +572,129 @@ const Admin = () => {
       )}
 
       <div className="d-flex">
-        {/* Sidebar */}
-        <div className={`bg-white shadow-sm position-fixed position-lg-sticky top-0 h-100 ${sidebarOpen ? 'd-block' : 'd-none d-lg-block'}`} 
-             style={{ width: '280px', zIndex: 1050 }}>
-          <div className="p-4 border-bottom">
+        {/* Improved Sidebar */}
+        <nav className={`bg-white shadow-lg border-end position-fixed position-lg-sticky top-0 h-100 transition-all ${
+          sidebarOpen ? 'd-block' : 'd-none d-lg-block'
+        } ${sidebarCollapsed ? 'sidebar-collapsed' : ''}`} 
+             style={{ 
+               width: sidebarCollapsed ? '80px' : '280px', 
+               zIndex: 1050,
+               transition: 'width 0.3s ease'
+             }}>
+          
+          {/* Sidebar Header */}
+          <div className="p-4 border-bottom bg-primary text-white">
             <div className="d-flex justify-content-between align-items-center">
-              <h4 className="mb-0 text-primary fw-bold">Admin Panel</h4>
-              <button 
-                className="btn btn-sm d-lg-none"
-                onClick={() => setSidebarOpen(false)}
-              >
-                <X size={20} />
-              </button>
+              {!sidebarCollapsed && (
+                <h4 className="mb-0 fw-bold">Admin Panel</h4>
+              )}
+              <div className="d-flex">
+                <button 
+                  className="btn btn-sm text-white d-none d-lg-block me-2"
+                  onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
+                  title={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+                >
+                  <ChevronLeft className={`transition-transform ${sidebarCollapsed ? 'rotate-180' : ''}`} size={18} />
+                </button>
+                <button 
+                  className="btn btn-sm text-white d-lg-none"
+                  onClick={() => setSidebarOpen(false)}
+                >
+                  <X size={20} />
+                </button>
+              </div>
             </div>
           </div>
           
-          <nav className="p-4">
+          {/* Navigation */}
+          <div className="p-3">
             <ul className="nav nav-pills flex-column">
               {navigationItems.map(item => (
                 <li key={item.id} className="nav-item mb-2">
                   <button
-                    className={`nav-link w-100 text-start d-flex align-items-center ${activeTab === item.id ? 'active' : ''}`}
+                    className={`nav-link w-100 text-start d-flex align-items-center border-0 rounded ${
+                      activeTab === item.id ? 'active bg-primary text-white' : 'text-dark hover-bg-light'
+                    }`}
                     onClick={() => {
                       setActiveTab(item.id);
                       setSidebarOpen(false);
                     }}
+                    title={sidebarCollapsed ? item.label : ''}
                   >
-                    <item.icon size={18} className="me-3" />
-                    {item.label}
+                    <item.icon size={18} className={sidebarCollapsed ? 'mx-auto' : 'me-3'} />
+                    {!sidebarCollapsed && <span className="fw-medium">{item.label}</span>}
                   </button>
                 </li>
               ))}
             </ul>
-          </nav>
-        </div>
+          </div>
+        </nav>
 
         {/* Main Content */}
-        <div className="flex-grow-1" style={{ marginLeft: window.innerWidth >= 992 ? '0' : '0' }}>
+        <div className="flex-grow-1" style={{ 
+          marginLeft: window.innerWidth >= 992 ? (sidebarCollapsed ? '80px' : '280px') : '0',
+          transition: 'margin-left 0.3s ease'
+        }}>
           {/* Header */}
-          <header className="bg-white shadow-sm p-4 d-flex justify-content-between align-items-center">
-            <button 
-              className="btn btn-outline-secondary d-lg-none"
-              onClick={() => setSidebarOpen(true)}
-            >
-              <Menu size={20} />
-            </button>
-            
-            <div className="d-flex align-items-center ms-auto">
-              <div className="dropdown">
-                <button 
-                  className="btn btn-outline-secondary dropdown-toggle" 
-                  type="button" 
-                  data-bs-toggle="dropdown"
-                >
-                  Admin User
-                </button>
-                <ul className="dropdown-menu">
-                  <li><a className="dropdown-item" href="#">Profile</a></li>
-                  <li><a className="dropdown-item" href="#">Settings</a></li>
-                  <li><hr className="dropdown-divider" /></li>
-                  <li><a className="dropdown-item" href="#">Logout</a></li>
-                </ul>
+          <header className="bg-white shadow-sm border-bottom sticky-top">
+            <div className="d-flex justify-content-between align-items-center p-4">
+              <button 
+                className="btn btn-outline-primary d-lg-none"
+                onClick={() => setSidebarOpen(true)}
+              >
+                <Menu size={20} />
+              </button>
+              
+              <div className="d-flex align-items-center ms-auto">
+                <div className="dropdown">
+                  <button 
+                    className="btn btn-outline-secondary dropdown-toggle d-flex align-items-center" 
+                    type="button" 
+                    data-bs-toggle="dropdown"
+                  >
+                    <div className="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2" 
+                         style={{ width: '32px', height: '32px', fontSize: '14px' }}>
+                      AU
+                    </div>
+                    Admin User
+                  </button>
+                  <ul className="dropdown-menu dropdown-menu-end shadow">
+                    <li><a className="dropdown-item" href="#"><Users size={16} className="me-2" />Profile</a></li>
+                    <li><a className="dropdown-item" href="#"><Settings size={16} className="me-2" />Settings</a></li>
+                    <li><hr className="dropdown-divider" /></li>
+                    <li><a className="dropdown-item text-danger" href="#"><X size={16} className="me-2" />Logout</a></li>
+                  </ul>
+                </div>
               </div>
             </div>
           </header>
 
           {/* Page Content */}
           <main className="p-4">
-            {renderContent()}
+            <div className="container-fluid">
+              {renderContent()}
+            </div>
           </main>
         </div>
       </div>
+
+      <style jsx>{`
+        .sidebar-collapsed .nav-link span {
+          display: none;
+        }
+        .hover-bg-light:hover {
+          background-color: #f8f9fa !important;
+        }
+        .transition-all {
+          transition: all 0.3s ease;
+        }
+        .transition-transform {
+          transition: transform 0.3s ease;
+        }
+        .rotate-180 {
+          transform: rotate(180deg);
+        }
+      `}</style>
     </div>
   );
 };
